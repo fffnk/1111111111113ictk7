@@ -4,20 +4,25 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         
-        <!-- Čisté CDN linky pro MindAR a A-Frame -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+        <!-- Návrat ke stabilní verzi A-Frame 1.2.0, která spolehlivě funguje s AR.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/3.3.2/aframe-ar.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+        
+        <!-- Skripty pro dotyková gesta (přes spolehlivé CDN jsdelivr) -->
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-handler.js"></script>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
-        <!-- Zde zapínáme MindAR a nastavujeme filtry pro absolutní plynulost modelu -->
-        <a-scene 
-            mindar-image="imageTargetSrc: assets/targets.mind; filterMinCF: 0.0001; filterBeta: 0.001;" 
-            color-space="sRGB" 
-            renderer="colorManagement: true, physicallyCorrectLights" 
-            vr-mode-ui="enabled: false" 
-            device-orientation-permission-ui="enabled: false"
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            renderer="logarithmicDepthBuffer: true;"
+            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+            id="scene"
+            embedded
+            gesture-detector
         >
             <a-assets>
                 <a-asset-item 
@@ -26,17 +31,32 @@
                 ></a-asset-item>
             </a-assets>
 
-            <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+            <!-- Uvolněnější hodnoty stabilizace (tolerance 0.05), aby model nezmizel při horším světle -->
+            <a-marker
+                id="animated-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/marker.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.05"
+                smoothThreshold="2"
+            >
+                <a-entity
+                    id="bowser-model"
+                    position="0 0 0"
+                    scale="1 1 1"
+                    animation-mixer="loop: repeat"
+                    gltf-model="#animated-asset"
+                    class="clickable"
+                    gesture-handler
+                ></a-entity>
+            </a-marker>
 
-            <a-entity mindar-image-target="targetIndex: 0">
-                <a-gltf-model 
-                    rotation="0 0 0" 
-                    position="0 0 0" 
-                    scale="1 1 1" 
-                    src="#animated-asset" 
-                    animation-mixer
-                ></a-gltf-model>
-            </a-entity>
+            <a-entity camera></a-entity>
         </a-scene>
     </body>
 </html>
