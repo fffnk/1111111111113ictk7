@@ -3,11 +3,15 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AR.js Studio - Stabilní Verze</title>
-        <!-- Použití prověřené stabilní verze enginu -->
+        <title>AR.js Studio - Opraveno Bez Chyb</title>
+        
+        <!-- OPRAVA: Používáme oficiální stabilní servery, které mobil nezablokuje -->
         <script src="https://aframe.io"></script>
-        <script src="https://githack.com"></script>
-        <!-- Skript pro spuštění rotace z Blenderu -->
+        <script src="https://jsdelivr.net"></script>
+        <script src="https://jsdelivr.net"></script>
+        
+        <!-- Oficiální stabilní skripty pro gesta přímo z ověřeného CDN -->
+        <script src="https://jsdelivr.net"></script>
         <script src="https://jsdelivr.net"></script>
     </head>
 
@@ -19,6 +23,7 @@
             arjs="trackingMethod: best; sourceType: webcam; videoParameters: { facingMode: 'environment' }; debugUIEnabled: false;"
             id="scene"
             embedded
+            gesture-detector
         >
             <a-assets>
                 <a-asset-item
@@ -27,13 +32,15 @@
                 ></a-asset-item>
             </a-assets>
 
-            <!-- NÁVRAT K FUNKČNÍMU STABILNÍMU FILTRU: SmoothCount na 12 a normální tolerance -->
-            <!-- Tohle telefon bezpečně přelouská, bílá tma zmizí a chvění se utlumí -->
+            <!-- Stabilizační filtry smooth nastavené na rozumný střed, aby to netancovalo a mobil to upočítal -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
                 preset="custom"
                 url="assets/marker.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
                 smooth="true" 
                 smoothCount="12" 
                 smoothTolerance="0.005" 
