@@ -1,15 +1,12 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <!-- 1. Ponechána tvoje původní funkční verze A-Frame 1.0.4 -->
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         
-        <!-- Návrat ke stabilní verzi A-Frame 1.2.0, která spolehlivě funguje s AR.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/3.3.2/aframe-ar.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
-        
-        <!-- Skripty pro dotyková gesta (přes spolehlivé CDN jsdelivr) -->
+        <!-- 2. GitHack nahrazen za spolehlivý jsDelivr, verze a cesty jsou 1:1 s tvým originálem -->
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@master/aframe/build/aframe-ar.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@master/dist/aframe-extras.loaders.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-handler.js"></script>
     </head>
@@ -25,13 +22,13 @@
             gesture-detector
         >
             <a-assets>
-                <a-asset-item 
-                    id="animated-asset" 
+                <a-asset-item
+                    id="animated-asset"
                     src="assets/asset.glb"
                 ></a-asset-item>
             </a-assets>
 
-            <!-- Uvolněnější hodnoty stabilizace (tolerance 0.05), aby model nezmizel při horším světle -->
+            <!-- Přidána stabilizace pohybu (smooth). Pokud by model zlobil, stačí smazat 4 řádky začínající na 'smooth' -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
@@ -45,9 +42,9 @@
                 smoothTolerance="0.05"
                 smoothThreshold="2"
             >
+                <!-- Vráceno tvé původní nastavení entity bez pozice -->
                 <a-entity
                     id="bowser-model"
-                    position="0 0 0"
                     scale="1 1 1"
                     animation-mixer="loop: repeat"
                     gltf-model="#animated-asset"
