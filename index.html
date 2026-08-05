@@ -4,19 +4,19 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         
-        <!-- Původní funkční verze knihoven z bezpečných CDN -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@master/aframe/build/aframe-ar.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@master/dist/aframe-extras.loaders.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-handler.js"></script>
 
-        <!-- NÁŠ VLASTNÍ KÓD PRO HARDWAROVOU STABILIZACI -->
+        <!-- AGRESIVNÍ DEADZONE FILTR -->
         <script>
             AFRAME.registerComponent('stabilizer', {
                 schema: {
                     marker: {type: 'selector'},
-                    speed: {type: 'number', default: 0.15} // Můžeš upravit (0.05 je ultra plynulé, ale pomalé | 0.3 je rychlejší, ale méně stabilní)
+                    speed: {type: 'number', default: 0.1}, // Rychlost dohánění
+                    threshold: {type: 'number', default: 0.02} // Mrtvá zóna - vše pod tuto hodnotu se ignoruje
                 },
                 init: function () {
                     this.markerObj = this.data.marker.object3D;
@@ -25,14 +25,22 @@
                 tick: function () {
                     if (this.markerObj && this.markerObj.visible) {
                         if (!this.el.object3D.visible) {
-                            // Při prvním načtení se model přichytí okamžitě na střed markeru
                             this.el.object3D.position.copy(this.markerObj.position);
                             this.el.object3D.quaternion.copy(this.markerObj.quaternion);
                             this.el.object3D.visible = true;
                         }
-                        // Matematické vyhlazení pohybu a rotace (Linear Interpolation)
-                        this.el.object3D.position.lerp(this.markerObj.position, this.data.speed);
-                        this.el.object3D.quaternion.slerp(this.markerObj.quaternion, this.data.speed);
+                        
+                        // Vypočítáme, jak moc se marker od minula pohnul
+                        var distance = this.el.object3D.position.distanceTo(this.markerObj.position);
+                        var angle = this.el.object3D.quaternion.angleTo(this.markerObj.quaternion);
+
+                        // Model se pohne POUZE tehdy, pokud je pohyb větší než náš threshold (odstraní mikrotřes)
+                        if (distance > this.data.threshold) {
+                            this.el.object3D.position.lerp(this.markerObj.position, this.data.speed);
+                        }
+                        if (angle > this.data.threshold) {
+                            this.el.object3D.quaternion.slerp(this.markerObj.quaternion, this.data.speed);
+                        }
                     } else {
                         this.el.object3D.visible = false;
                     }
@@ -55,7 +63,6 @@
                 <a-asset-item id="animated-asset" src="assets/asset.glb"></a-asset-item>
             </a-assets>
 
-            <!-- 1. MARKER: Je zcela prázdný a nemá atribut "smooth" -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
@@ -67,8 +74,8 @@
             >
             </a-marker>
 
-            <!-- 2. MODEL: Je mimo marker. Volá náš skript, který z markeru čte data a zjemňuje je -->
-            <a-entity stabilizer="marker: #animated-marker; speed: 0.15">
+            <!-- Zde je napojený náš nový filtr. Můžeš ladit threshold (0.01 - 0.05). Čím vyšší číslo, tím víc bude model přibitý na místě (ale může skákat při větším pohybu) -->
+            <a-entity stabilizer="marker: #animated-marker; speed: 0.1; threshold: 0.02">
                 <a-entity
                     id="bowser-model"
                     scale="1 1 1"
