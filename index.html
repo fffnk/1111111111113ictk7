@@ -1,11 +1,44 @@
 <!doctype html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        
+        <!-- Původní funkční verze knihoven z bezpečných CDN -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@master/aframe/build/aframe-ar.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@master/dist/aframe-extras.loaders.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/AR-js-org/studio-backend@master/src/modules/marker/tools/gesture-handler.js"></script>
+
+        <!-- NÁŠ VLASTNÍ KÓD PRO HARDWAROVOU STABILIZACI -->
+        <script>
+            AFRAME.registerComponent('stabilizer', {
+                schema: {
+                    marker: {type: 'selector'},
+                    speed: {type: 'number', default: 0.15} // Můžeš upravit (0.05 je ultra plynulé, ale pomalé | 0.3 je rychlejší, ale méně stabilní)
+                },
+                init: function () {
+                    this.markerObj = this.data.marker.object3D;
+                    this.el.object3D.visible = false;
+                },
+                tick: function () {
+                    if (this.markerObj && this.markerObj.visible) {
+                        if (!this.el.object3D.visible) {
+                            // Při prvním načtení se model přichytí okamžitě na střed markeru
+                            this.el.object3D.position.copy(this.markerObj.position);
+                            this.el.object3D.quaternion.copy(this.markerObj.quaternion);
+                            this.el.object3D.visible = true;
+                        }
+                        // Matematické vyhlazení pohybu a rotace (Linear Interpolation)
+                        this.el.object3D.position.lerp(this.markerObj.position, this.data.speed);
+                        this.el.object3D.quaternion.slerp(this.markerObj.quaternion, this.data.speed);
+                    } else {
+                        this.el.object3D.visible = false;
+                    }
+                }
+            });
+        </script>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
@@ -19,12 +52,10 @@
             gesture-detector
         >
             <a-assets>
-                <a-asset-item
-                    id="animated-asset"
-                    src="assets/asset.glb"
-                ></a-asset-item>
+                <a-asset-item id="animated-asset" src="assets/asset.glb"></a-asset-item>
             </a-assets>
 
+            <!-- 1. MARKER: Je zcela prázdný a nemá atribut "smooth" -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
@@ -33,8 +64,11 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
             >
+            </a-marker>
+
+            <!-- 2. MODEL: Je mimo marker. Volá náš skript, který z markeru čte data a zjemňuje je -->
+            <a-entity stabilizer="marker: #animated-marker; speed: 0.15">
                 <a-entity
                     id="bowser-model"
                     scale="1 1 1"
@@ -43,7 +77,7 @@
                     class="clickable"
                     gesture-handler
                 ></a-entity>
-            </a-marker>
+            </a-entity>
 
             <a-entity camera></a-entity>
         </a-scene>
