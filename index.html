@@ -3,15 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AR.js Studio - Opraveno Bez Chyb</title>
-        
-        <!-- OPRAVA: Používáme oficiální stabilní servery, které mobil nezablokuje -->
+        <title>AR.js Studio - Navrat k funkcnimu</title>
+        <!-- Prověřené verze, se kterými ti kamera prokazatelně naběhla -->
         <script src="https://aframe.io"></script>
-        <script src="https://jsdelivr.net"></script>
-        <script src="https://jsdelivr.net"></script>
-        
-        <!-- Oficiální stabilní skripty pro gesta přímo z ověřeného CDN -->
-        <script src="https://jsdelivr.net"></script>
+        <script src="https://githack.com"></script>
         <script src="https://jsdelivr.net"></script>
     </head>
 
@@ -19,11 +14,10 @@
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
-            renderer="logarithmicDepthBuffer: true;"
+            renderer="logarithmicDepthBuffer: true; antialias: true;"
             arjs="trackingMethod: best; sourceType: webcam; videoParameters: { facingMode: 'environment' }; debugUIEnabled: false;"
             id="scene"
             embedded
-            gesture-detector
         >
             <a-assets>
                 <a-asset-item
@@ -32,19 +26,17 @@
                 ></a-asset-item>
             </a-assets>
 
-            <!-- Stabilizační filtry smooth nastavené na rozumný střed, aby to netancovalo a mobil to upočítal -->
+            <!-- OPRAVENO: Vyhlazování nastavené přímo přes parametry AR.js scény -->
+            <!-- Smazali jsme ty problematické doplňky na gesta, co to sekaly -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
                 preset="custom"
                 url="assets/marker.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
                 smooth="true" 
-                smoothCount="12" 
-                smoothTolerance="0.005" 
-                smoothThreshold="3"
+                smoothCount="10" 
+                smoothTolerance="0.01" 
+                smoothThreshold="5"
             >
                 
             </a-marker>
