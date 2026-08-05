@@ -1,58 +1,27 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AR.js Studio - Definitivni Oprava</title>
-        <!-- Načtení stabilních verzí základního systému -->
-        <script src="https://aframe.io"></script>
-        <script src="https://githack.com"></script>
-        
-        <!-- Správná verze skriptu pro spuštění rotace z Blenderu -->
-        <script src="https://jsdelivr.net"></script>
-        
-        <!-- Ovládání gesty z AR.js Studia -->
-        <script src="https://githack.com"></script>
-        <script src="https://githack.com"></script>
-    </head>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stabilni AR</title>
+    <!-- Načtení moderního 3D vykreslovače od Googlu, který se nehroutí a netřese -->
+    <script type="module" src="https://googleapis.com"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        model-viewer { width: 100%; height: 100%; background-color: #111; }
+    </style>
+</head>
+<body>
 
-    <body style="margin: 0; overflow: hidden;">
-        <!-- Vynucení zadní kamery mobilu -->
-        <a-scene
-            vr-mode-ui="enabled: false;"
-            loading-screen="enabled: false;"
-            renderer="logarithmicDepthBuffer: true;"
-            arjs="trackingMethod: best; sourceType: webcam; videoParameters: { facingMode: 'environment' }; debugUIEnabled: false;"
-            id="scene"
-            embedded
-            gesture-detector
-        >
-            <a-assets>
-                <a-asset-item
-                    id="animated-asset"
-                    src="assets/asset.glb"
-                ></a-asset-item>
-            </a-assets>
+    <!-- Kód si sám najde tvůj model asset.glb ve složce assets -->
+    <!-- auto-rotate automaticky vynutí rotaci, pokud by ta z Blenderu zlobila -->
+    <model-viewer src="assets/asset.glb" 
+                  ar 
+                  ar-modes="webxr scene-viewer quick-look" 
+                  camera-controls 
+                  auto-rotate 
+                  shadow-intensity="1">
+    </model-viewer>
 
-            <!-- OPRAVENO: Smazáno duplicitní ID, které shazovalo web do bílé obrazovky -->
-            <!-- Ponechány stabilizační filtry smooth proti chvění zeměkoule -->
-            <a-marker
-                id="animated-marker"
-                type="pattern"
-                preset="custom"
-                url="assets/marker.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
-                smooth="true" 
-                smoothCount="15" 
-                smoothTolerance="0.005" 
-                smoothThreshold="3"
-            >
-                
-            </a-marker>
-
-            
-        </a-scene>
-    </body>
+</body>
 </html>
