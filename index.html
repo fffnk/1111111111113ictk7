@@ -1,27 +1,44 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stabilni AR</title>
-    <!-- Načtení moderního 3D vykreslovače od Googlu, který se nehroutí a netřese -->
-    <script type="module" src="https://googleapis.com"></script>
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-        model-viewer { width: 100%; height: 100%; background-color: #111; }
-    </style>
-</head>
-<body>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AR.js - Dokonale Hladke</title>
+        <script src="https://aframe.io"></script>
+        <script src="https://githack.com"></script>
+        <script src="https://jsdelivr.net"></script>
+    </head>
 
-    <!-- Kód si sám najde tvůj model asset.glb ve složce assets -->
-    <!-- auto-rotate automaticky vynutí rotaci, pokud by ta z Blenderu zlobila -->
-    <model-viewer src="assets/asset.glb" 
-                  ar 
-                  ar-modes="webxr scene-viewer quick-look" 
-                  camera-controls 
-                  auto-rotate 
-                  shadow-intensity="1">
-    </model-viewer>
+    <body style="margin: 0; overflow: hidden;">
+        <!-- UPRAVENO: Přidali jsme antialias: true a precision: high pro vyhlazení hran a výpočtů -->
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            renderer="logarithmicDepthBuffer: true; antialias: true; precision: high; alpha: true;"
+            arjs="trackingMethod: best; sourceType: webcam; videoParameters: { facingMode: 'environment' }; debugUIEnabled: false;"
+            id="scene"
+            embedded
+        >
+            <a-assets>
+                <a-asset-item id="animated-asset" src="assets/asset.glb"></a-asset-item>
+            </a-assets>
 
-</body>
+            <!-- EXTRA FILTRACE: Zvýšili jsme smoothCount na 35 a zpřísnili tolerance -->
+            <!-- To telefonu přikáže mikro-záškuby ruky úplně ignorovat a model uměle "přilepit" -->
+            <a-marker
+                id="animated-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/marker.patt"
+                smooth="true" 
+                smoothCount="35" 
+                smoothTolerance="0.001" 
+                smoothThreshold="1"
+            >
+                
+            </a-marker>
+
+            
+        </a-scene>
+    </body>
 </html>
