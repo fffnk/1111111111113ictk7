@@ -3,16 +3,21 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AR.js Studio - Stabilizovano</title>
-        <!-- AKTUALIZACE: Novější verze A-Frame (1.3.0) opravuje lagování a chvění texturovaných koulí -->
+        <title>AR.js Studio - Definitivni Oprava</title>
+        <!-- Načtení stabilních verzí základního systému -->
         <script src="https://aframe.io"></script>
         <script src="https://githack.com"></script>
-        <script src="https://githack.com"></script>
+        
+        <!-- Správná verze skriptu pro spuštění rotace z Blenderu -->
+        <script src="https://jsdelivr.net"></script>
+        
+        <!-- Ovládání gesty z AR.js Studia -->
         <script src="https://githack.com"></script>
         <script src="https://githack.com"></script>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
+        <!-- Vynucení zadní kamery mobilu -->
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
@@ -29,7 +34,8 @@
                 ></a-asset-item>
             </a-assets>
 
-            <!-- STABILIZACE: Přidali jsme parametry smooth, které kompletně vymažou třesení kamery -->
+            <!-- OPRAVENO: Smazáno duplicitní ID, které shazovalo web do bílé obrazovky -->
+            <!-- Ponechány stabilizační filtry smooth proti chvění zeměkoule -->
             <a-marker
                 id="animated-marker"
                 type="pattern"
@@ -38,7 +44,6 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
                 smooth="true" 
                 smoothCount="15" 
                 smoothTolerance="0.005" 
